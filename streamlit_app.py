@@ -33,8 +33,7 @@ with tabs[0]:
         if image_upload:
             st.image(image_upload, use_column_width=True)
             bytes_data = image_upload.read()
-            with NamedTemporaryFile(delete=False) as tmp:
-                tmp.write(bytes_data)
+            base64_image = base64.b64encode(bytes_data).decode('utf-8')
 
     # Example images
     example_img = st.toggle('Try example mock-up images')
@@ -82,8 +81,6 @@ with tabs[0]:
 
         elif image_upload is not None and api_key and start_button:
             with st.spinner('Processing ...'):
-                base64_image = encode_image(image_upload)
-
                 messages = [
                     {
                         'role': 'user',
@@ -151,7 +148,7 @@ with tabs[1]:
                 message_placeholder = st.empty()
 
                 for completion in client.chat.completions.create(
-                        model='gpt-4', messages=messages,
+                        model='gpt-4o', messages=messages,
                         max_tokens=1280, stream=True):
 
                     if completion.choices[0].delta.content is not None:
